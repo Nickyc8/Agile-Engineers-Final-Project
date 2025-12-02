@@ -66,15 +66,23 @@ def delete(db: Session, item_id):
         raise HTTPException(status_code=400, detail=error)
 
 
-def search(db: Session, keyword: str):
+def search(db: Session, keyword: str, dietary: str = None):
     try:
-        keyword = f"%{keyword.lower()}%"
-        items = db.query(model.Sandwich).filter(
-            model.Sandwich.sandwich_name.ilike(keyword)
-        ).all()
+        query = db.query(model.Sandwich)
+
+        if keyword:
+            keyword_pattern = f"%{keyword.lower()}%"
+            query = query.filter(model.Sandwich.sandwich_name.ilike(keyword_pattern))
+
+        if dietary:
+            # Search for dietary tag in the comma-separated list
+            dietary_pattern = f"%{dietary.lower()}%"
+            query = query.filter(model.Sandwich.dietary_tags.ilike(dietary_pattern))
+
+        items = query.all()
         return items
-    except Exception:
-        raise HTTPException(status_code=400, detail="Search failed")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Search failed: {str(e)}")
 
 
 def popularity(db: Session):
@@ -97,6 +105,7 @@ def popularity(db: Session):
             result.append({
                 "sandwich_id": s.id,
                 "name": s.sandwich_name,
+                "dietary_tags": s.dietary_tags,
                 "review_count": count,
                 "average_rating": avg
             })
