@@ -12,12 +12,14 @@ class OrderBase(BaseModel):
 class OrderCreate(OrderBase):
     customer_id: int
     order_status: str = "pending"
+    order_type: str = "takeout"
     promotion_id: Optional[int] = None
 
 
 class OrderUpdate(BaseModel):
     description: Optional[str] = None
     order_status: Optional[str] = None
+    order_type: Optional[str] = None
     total_price: Optional[Decimal] = None
     tracking_number: Optional[str] = None
     promotion_id: Optional[int] = None

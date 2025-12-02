@@ -12,6 +12,7 @@ class Order(Base):
     description = Column(String(300))
     tracking_number = Column(String(50), unique=True, nullable=True)
     order_status = Column(String(50), nullable=False)
+    order_type = Column(String(50), nullable=False, server_default="takeout")
     total_price = Column(DECIMAL(10, 2), nullable=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
     promotion_id = Column(Integer, ForeignKey("promotions.id"), nullable=True)

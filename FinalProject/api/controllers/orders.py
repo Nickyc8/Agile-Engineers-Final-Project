@@ -8,6 +8,7 @@ from ..models.orders import Order
 from ..models.promotions import Promotion
 
 ALLOWED_STATUSES = ["Pending", "Preparing", "Ready", "Completed", "Cancelled"]
+ALLOWED_ORDER_TYPES = ["takeout", "delivery", "dine-in"]
 
 
 def generate_tracking_number():
@@ -18,6 +19,11 @@ def create(db: Session, request):
     status_value = request.order_status or "Pending"
     if status_value not in ALLOWED_STATUSES:
         raise HTTPException(status_code=400, detail="Invalid order status")
+
+    order_type_value = request.order_type or "takeout"
+    if order_type_value not in ALLOWED_ORDER_TYPES:
+        raise HTTPException(status_code=400,
+                            detail=f"Invalid order type. Must be one of: {', '.join(ALLOWED_ORDER_TYPES)}")
 
     promo = None
     if request.promotion_id:
@@ -33,6 +39,7 @@ def create(db: Session, request):
         customer_id=request.customer_id,
         description=request.description,
         order_status=status_value,
+        order_type=order_type_value,
         promotion_id=request.promotion_id,
         tracking_number=tracking_number,
         total_price=0
@@ -79,6 +86,10 @@ def update(db: Session, item_id: int, request):
 
         if request.order_status and request.order_status not in ALLOWED_STATUSES:
             raise HTTPException(status_code=400, detail="Invalid order status")
+
+        if request.order_type and request.order_type not in ALLOWED_ORDER_TYPES:
+            raise HTTPException(status_code=400,
+                                detail=f"Invalid order type. Must be one of: {', '.join(ALLOWED_ORDER_TYPES)}")
 
         update_data = request.dict(exclude_unset=True)
         item.update(update_data, synchronize_session=False)
