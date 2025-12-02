@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from typing import Optional
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from ..dependencies.database import get_db
 from ..controllers import orders as controller
@@ -13,8 +14,10 @@ def create(request: schema.OrderCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[schema.Order])
-def read_all(db: Session = Depends(get_db)):
-    return controller.read_all(db)
+def read_all(start_date: Optional[str] = Query(None, description="Start date in YYYY-MM-DD format"),
+    end_date: Optional[str] = Query(None, description="End date in YYYY-MM-DD format"),
+    db: Session = Depends(get_db)):
+    return controller.read_all(db, start_date, end_date)
 
 
 @router.get("/{item_id}", response_model=schema.Order)
