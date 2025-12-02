@@ -28,6 +28,7 @@ def test_create_customer_and_order():
         "customer_id": customer_id,
         "description": "Test order",
         "order_status": "pending",
+        "order_type": "takeout",
         "promotion_id": None
     }
 
@@ -38,4 +39,6 @@ def test_create_customer_and_order():
     assert order_data["customer_id"] == customer_id
     assert order_data["description"] == "Test order"
     assert order_data["order_status"] == "pending"
+    assert order_data["order_type"] == "takeout"
+    assert "tracking_number" in order_data
     assert "id" in order_data
