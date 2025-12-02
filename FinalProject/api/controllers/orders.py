@@ -91,6 +91,15 @@ def read_one(db: Session, item_id: int):
         error = str(e.__dict__["orig"])
         raise HTTPException(status_code=400, detail=error)
 
+def track_order(db: Session, tracking_number: str):
+    try:
+        order = db.query(Order).filter(Order.tracking_number == tracking_number).first()
+        if not order:
+            raise HTTPException(status_code=404, detail="Tracking number not found!")
+        return order
+    except SQLAlchemyError as e:
+        error = str(e.__dict__["orig"])
+        raise HTTPException(status_code=400, detail=error)
 
 def update(db: Session, item_id: int, request):
     try:

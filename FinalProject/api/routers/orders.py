@@ -20,6 +20,10 @@ def read_all(start_date: Optional[str] = Query(None, description="Start date in 
     return controller.read_all(db, start_date, end_date)
 
 
+@router.get("/track/{tracking_number}", response_model=schema.Order)
+def track_order(tracking_number: str, db: Session = Depends(get_db)):
+    return controller.track_order(db, tracking_number)
+
 @router.get("/{item_id}", response_model=schema.Order)
 def read_one(item_id: int, db: Session = Depends(get_db)):
     return controller.read_one(db, item_id)
