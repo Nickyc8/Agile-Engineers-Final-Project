@@ -1,31 +1,41 @@
 from fastapi.testclient import TestClient
-from ..controllers import orders as controller
 from ..main import app
-import pytest
-from ..models import orders as model
+import uuid
 
-# Create a test client for the app
 client = TestClient(app)
 
 
-@pytest.fixture
-def db_session(mocker):
-    return mocker.Mock()
+def test_create_customer_and_order():
+    unique_email = f"test_{uuid.uuid4().hex}@example.com"
 
-
-def test_create_order(db_session):
-    # Create a sample order
-    order_data = {
-        "customer_name": "John Doe",
-        "description": "Test order"
+    customer_payload = {
+        "name": "Test User",
+        "email": unique_email,
+        "phone": "1234567890",
+        "address": "123 Test St"
     }
 
-    order_object = model.Order(**order_data)
+    customer_response = client.post("/customers/", json=customer_payload)
+    assert customer_response.status_code == 201
 
-    # Call the create function
-    created_order = controller.create(db_session, order_object)
+    customer_data = customer_response.json()
+    assert customer_data["email"] == unique_email
+    assert "id" in customer_data
 
-    # Assertions
-    assert created_order is not None
-    assert created_order.customer_name == "John Doe"
-    assert created_order.description == "Test order"
+    customer_id = customer_data["id"]
+
+    order_payload = {
+        "customer_id": customer_id,
+        "description": "Test order",
+        "order_status": "pending",
+        "promotion_id": None
+    }
+
+    order_response = client.post("/orders/", json=order_payload)
+    assert order_response.status_code == 200
+
+    order_data = order_response.json()
+    assert order_data["customer_id"] == customer_id
+    assert order_data["description"] == "Test order"
+    assert order_data["order_status"] == "pending"
+    assert "id" in order_data

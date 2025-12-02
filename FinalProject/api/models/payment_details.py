@@ -11,5 +11,7 @@ class PaymentDetail(Base):
     card_information = Column(String(255), nullable=False)
     transaction_status = Column(String(50), nullable=False)
     payment_type = Column(String(50), nullable=False)
+    amount = Column(DECIMAL(10, 2), nullable=False)
+    payment_date = Column(DATETIME, nullable=False, server_default=str(datetime.now()))
 
     order = relationship("Order", back_populates="payment_detail")
