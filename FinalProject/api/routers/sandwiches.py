@@ -2,9 +2,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from ..dependencies.database import get_db
-from ..controllers import orders as controller
-from ..schemas import orders as schema
-from ..dependencies.database import get_db
 from ..controllers import sandwiches as controller
 from ..schemas import sandwiches as schema
 
@@ -21,9 +18,12 @@ def read_all(db: Session = Depends(get_db)):
     return controller.read_all(db)
 
 
-@router.get("/search/{keyword}")
-def search(keyword: Optional[str] = Query(None, description="Search by sandwich name"),
-    dietary: Optional[str] = Query(None, description="Filter by dietary tag (e.g., vegetarian, vegan, gluten-free)"), db: Session = Depends(get_db)):
+@router.get("/search")
+def search(
+    keyword: Optional[str] = Query(None, description="Search by sandwich name"),
+    dietary: Optional[str] = Query(None, description="Filter by dietary tag (e.g., vegetarian, vegan, gluten-free)"),
+    db: Session = Depends(get_db)
+):
     return controller.search(db, keyword, dietary)
 
 
