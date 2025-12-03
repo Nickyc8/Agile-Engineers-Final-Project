@@ -30,6 +30,7 @@ class Order(OrderBase):
     order_date: Optional[datetime] = None
     order_status: str
     total_price: Optional[Decimal] = None
+    order_type: str
     tracking_number: Optional[str] = None
     customer_id: int
     promotion_id: Optional[int] = None

@@ -6,7 +6,7 @@ client = TestClient(app)
 
 
 def test_create_customer_and_order():
-    unique_email = f"test_{uuid.uuid4().hex}@example.com"
+    unique_email = f"test{uuid.uuid4().hex}@example.com"
 
     customer_payload = {
         "name": "Test User",
@@ -27,7 +27,7 @@ def test_create_customer_and_order():
     order_payload = {
         "customer_id": customer_id,
         "description": "Test order",
-        "order_status": "pending",
+        "order_status": "Pending",
         "order_type": "takeout",
         "promotion_id": None
     }
@@ -38,7 +38,7 @@ def test_create_customer_and_order():
     order_data = order_response.json()
     assert order_data["customer_id"] == customer_id
     assert order_data["description"] == "Test order"
-    assert order_data["order_status"] == "pending"
+    assert order_data["order_status"] == "Pending"
     assert order_data["order_type"] == "takeout"
     assert "tracking_number" in order_data
     assert "id" in order_data
